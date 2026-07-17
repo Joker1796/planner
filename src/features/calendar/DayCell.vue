@@ -28,6 +28,7 @@ const dots = computed(() =>
       id: entry.id,
       done: entry.done,
       dotClass: TASK_COLOR_CLASSES[color].dot,
+      iconBgClass: TASK_COLOR_CLASSES[color].chipBg,
       content: icon ?? initial,
       isIcon: Boolean(icon),
       isBadge: Boolean(icon || initial),
@@ -55,7 +56,7 @@ const overflowCount = computed(() => Math.max(props.entries.length - MAX_VISIBLE
         :key="dot.id"
         class="flex items-center justify-center rounded-full leading-none"
         :class="[
-          dot.isIcon ? '' : dot.dotClass,
+          dot.isIcon ? dot.iconBgClass : dot.dotClass,
           dot.done ? 'opacity-40' : '',
           dot.isBadge ? 'h-3.5 w-3.5 text-[9px]' : 'h-1.5 w-1.5',
           dot.isBadge && !dot.isIcon ? 'font-bold text-white' : '',

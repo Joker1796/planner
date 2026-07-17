@@ -29,5 +29,3 @@ export const TASK_ICONS = [
   '⭐',
   '🎈',
 ] as const
-
-export type TaskIcon = (typeof TASK_ICONS)[number]

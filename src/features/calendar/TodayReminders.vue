@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
-import { toISODate } from '@/lib/date/dateUtils'
+import { useTodayISO } from '@/lib/date/useToday'
 import { TASK_COLOR_CLASSES, isTaskColor } from '@/lib/colors'
 import type { PlanEntry } from '@/types'
 
 const store = usePlannerStore()
-const todayIso = toISODate(new Date())
+const todayIso = useTodayISO()
 
 const todayEntries = computed(() =>
-  [...store.getEffectiveEntriesForDate(todayIso)].sort((a, b) => {
+  [...store.getEffectiveEntriesForDate(todayIso.value)].sort((a, b) => {
     if (a.time && b.time) return a.time.localeCompare(b.time)
     if (a.time) return -1
     if (b.time) return 1
@@ -33,7 +33,7 @@ function taskTypeDotClass(taskTypeId: string): string {
 
 function toggleDone(entry: PlanEntry): void {
   if (entry.id.startsWith('virtual:')) {
-    store.upsertPlanEntry(todayIso, entry.taskTypeId, true)
+    store.upsertPlanEntry(todayIso.value, entry.taskTypeId, true)
   } else {
     store.toggleEntryDone(entry.id)
   }
