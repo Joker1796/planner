@@ -17,4 +17,13 @@ export const migrations: Record<number, (old: unknown) => unknown> = {
       listItems: [],
     }
   },
+  3: (old) => {
+    const state = old as Record<string, unknown>
+    return {
+      ...state,
+      version: 4,
+      budgetGoals: [],
+      budgetTransactions: [],
+    }
+  },
 }

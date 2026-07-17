@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Chip from '@/components/Chip.vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
 
 const store = usePlannerStore()
@@ -14,22 +15,16 @@ function removeFamilyMember(id: string, name: string): void {
     <p v-if="store.familyMembers.length === 0" class="text-sm text-slate-500">
       Пока нет ни одного члена семьи — добавьте первого ниже.
     </p>
-    <ul v-else class="space-y-2">
-      <li
+    <div v-else class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1">
+      <Chip
         v-for="member in store.familyMembers"
         :key="member.id"
-        class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2"
-      >
-        <span class="text-sm text-slate-800">{{ member.name }}</span>
-        <button
-          type="button"
-          aria-label="Удалить"
-          class="text-slate-400 hover:text-rose-500"
-          @click="removeFamilyMember(member.id, member.name)"
-        >
-          ✕
-        </button>
-      </li>
-    </ul>
+        class="shrink-0 snap-start"
+        :label="member.name"
+        color="indigo"
+        removable
+        @remove="removeFamilyMember(member.id, member.name)"
+      />
+    </div>
   </div>
 </template>

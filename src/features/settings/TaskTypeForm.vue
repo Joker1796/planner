@@ -103,9 +103,8 @@ function submit(): void {
     </div>
     <div v-if="store.familyMembers.length > 0">
       <p class="mb-1 text-sm font-medium text-slate-700">Ребёнок / член семьи</p>
-      <div class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1">
+      <div class="flex flex-wrap gap-2">
         <Chip
-          class="shrink-0 snap-start"
           label="Без привязки"
           color="indigo"
           :selected="selectedFamilyMemberId === null"
@@ -114,7 +113,6 @@ function submit(): void {
         <Chip
           v-for="member in store.familyMembers"
           :key="member.id"
-          class="shrink-0 snap-start"
           :label="member.name"
           color="indigo"
           :selected="selectedFamilyMemberId === member.id"

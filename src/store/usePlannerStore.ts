@@ -1,6 +1,15 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { FamilyMember, ListItem, ListKind, PlanEntry, Recurrence, TaskType } from '@/types'
+import type {
+  BudgetGoal,
+  BudgetTransaction,
+  FamilyMember,
+  ListItem,
+  ListKind,
+  PlanEntry,
+  Recurrence,
+  TaskType,
+} from '@/types'
 import { generateId } from '@/lib/id'
 import { loadState, saveState } from '@/lib/storage/repository'
 import { matchesRecurrence } from '@/lib/recurrence'
@@ -11,6 +20,8 @@ export const usePlannerStore = defineStore('planner', () => {
   const entries = ref<PlanEntry[]>(initial.entries)
   const familyMembers = ref<FamilyMember[]>(initial.familyMembers)
   const listItems = ref<ListItem[]>(initial.listItems)
+  const budgetGoals = ref<BudgetGoal[]>(initial.budgetGoals)
+  const budgetTransactions = ref<BudgetTransaction[]>(initial.budgetTransactions)
 
   function persist(): void {
     saveState({
@@ -18,6 +29,8 @@ export const usePlannerStore = defineStore('planner', () => {
       entries: entries.value,
       familyMembers: familyMembers.value,
       listItems: listItems.value,
+      budgetGoals: budgetGoals.value,
+      budgetTransactions: budgetTransactions.value,
     })
   }
 
@@ -156,6 +169,53 @@ export const usePlannerStore = defineStore('planner', () => {
     persist()
   }
 
+  function addBudgetGoal(
+    name: string,
+    targetAmount: number,
+    color: string,
+    deadline?: string | null,
+  ): void {
+    budgetGoals.value.push({
+      id: generateId(),
+      name,
+      targetAmount,
+      color,
+      deadline: deadline ?? null,
+      createdAt: Date.now(),
+    })
+    persist()
+  }
+
+  // Hard delete: a goal with no transactions left to track is just gone,
+  // unlike task types there's no "history" view that needs it to survive.
+  function removeBudgetGoal(id: string): void {
+    budgetGoals.value = budgetGoals.value.filter((goal) => goal.id !== id)
+    budgetTransactions.value = budgetTransactions.value.filter((tx) => tx.goalId !== id)
+    persist()
+  }
+
+  function addBudgetTransaction(
+    goalId: string,
+    amount: number,
+    note: string | null,
+    date: string,
+  ): void {
+    budgetTransactions.value.push({
+      id: generateId(),
+      goalId,
+      amount,
+      note: note || null,
+      date,
+      createdAt: Date.now(),
+    })
+    persist()
+  }
+
+  function removeBudgetTransaction(id: string): void {
+    budgetTransactions.value = budgetTransactions.value.filter((tx) => tx.id !== id)
+    persist()
+  }
+
   const entriesByDate = computed(() => {
     const map = new Map<string, PlanEntry[]>()
     for (const entry of entries.value) {
@@ -215,17 +275,39 @@ export const usePlannerStore = defineStore('planner', () => {
     return map
   }
 
+  const budgetTotalsByGoal = computed(() => {
+    const map = new Map<string, number>()
+    for (const tx of budgetTransactions.value) {
+      map.set(tx.goalId, (map.get(tx.goalId) ?? 0) + tx.amount)
+    }
+    return map
+  })
+
+  const budgetTransactionsByGoal = computed(() => {
+    const map = new Map<string, BudgetTransaction[]>()
+    for (const tx of budgetTransactions.value) {
+      const list = map.get(tx.goalId) ?? []
+      list.push(tx)
+      map.set(tx.goalId, list)
+    }
+    return map
+  })
+
   return {
     taskTypes,
     entries,
     familyMembers,
     listItems,
+    budgetGoals,
+    budgetTransactions,
     entriesByDate,
     taskTypeById,
     activeTaskTypes,
     familyMemberById,
     getEffectiveEntriesForDate,
     buildEffectiveEntriesByDate,
+    budgetTotalsByGoal,
+    budgetTransactionsByGoal,
     addTaskType,
     removeTaskType,
     upsertPlanEntry,
@@ -239,5 +321,9 @@ export const usePlannerStore = defineStore('planner', () => {
     addListItem,
     toggleListItemDone,
     removeListItem,
+    addBudgetGoal,
+    removeBudgetGoal,
+    addBudgetTransaction,
+    removeBudgetTransaction,
   }
 })

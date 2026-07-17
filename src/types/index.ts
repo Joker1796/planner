@@ -47,10 +47,30 @@ export interface ListItem {
   createdAt: number
 }
 
+export interface BudgetGoal {
+  id: string
+  name: string
+  targetAmount: number
+  color: string
+  deadline?: string | null
+  createdAt: number
+}
+
+export interface BudgetTransaction {
+  id: string
+  goalId: string
+  amount: number
+  note?: string | null
+  date: string
+  createdAt: number
+}
+
 export interface PersistedState {
   version: number
   taskTypes: TaskType[]
   entries: PlanEntry[]
   familyMembers: FamilyMember[]
   listItems: ListItem[]
+  budgetGoals: BudgetGoal[]
+  budgetTransactions: BudgetTransaction[]
 }
