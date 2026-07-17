@@ -1,0 +1,33 @@
+// Fixed preset of emoji icons task types can pick from.
+export const TASK_ICONS = [
+  '🌸',
+  '🌻',
+  '🌷',
+  '🐟',
+  '🐠',
+  '🐳',
+  '🍎',
+  '🍕',
+  '🍔',
+  '🥗',
+  '🍰',
+  '🚲',
+  '⚽',
+  '🏊',
+  '📚',
+  '🎨',
+  '🎵',
+  '🛏️',
+  '🦷',
+  '🧸',
+  '🎮',
+  '🏫',
+  '🌳',
+  '💊',
+  '☀️',
+  '🌙',
+  '⭐',
+  '🎈',
+] as const
+
+export type TaskIcon = (typeof TASK_ICONS)[number]

@@ -75,6 +75,9 @@ function removeEntry(entry: PlanEntry): void {
           class="flex-1 text-sm"
           :class="entry.done ? 'text-slate-400 line-through' : 'text-slate-800'"
         >
+          <span v-if="store.taskTypeById.get(entry.taskTypeId)?.icon">{{
+            store.taskTypeById.get(entry.taskTypeId)?.icon
+          }}</span>
           {{ store.taskTypeById.get(entry.taskTypeId)?.name ?? 'Задача' }}
         </span>
         <input
@@ -103,6 +106,7 @@ function removeEntry(entry: PlanEntry): void {
           :key="taskType.id"
           :label="taskType.name"
           :color="taskType.color"
+          :icon="taskType.icon"
           @click="addTaskType(taskType.id)"
         />
       </div>

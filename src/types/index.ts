@@ -21,6 +21,7 @@ export interface TaskType {
   familyMemberId?: string | null
   recurrence?: Recurrence | null
   excludedDates?: string[]
+  icon?: string | null
 }
 
 export interface PlanEntry {

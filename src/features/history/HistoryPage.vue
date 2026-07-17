@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { formatFullDate } from '@/lib/date/dateUtils'
 import { TASK_COLOR_CLASSES, isTaskColor } from '@/lib/colors'
+import type { PlanEntry } from '@/types'
 
 type DoneFilter = 'all' | 'done' | 'pending'
 
@@ -29,6 +30,10 @@ function taskTypeName(taskTypeId: string): string {
   return store.taskTypeById.get(taskTypeId)?.name ?? 'Задача'
 }
 
+function taskTypeIcon(taskTypeId: string): string | null {
+  return store.taskTypeById.get(taskTypeId)?.icon ?? null
+}
+
 function taskTypeDotClass(taskTypeId: string): string {
   const taskType = store.taskTypeById.get(taskTypeId)
   const color = taskType && isTaskColor(taskType.color) ? taskType.color : 'indigo'
@@ -47,6 +52,14 @@ function familyMemberName(taskTypeId: string): string | null {
 
 function toggleDone(entryId: string): void {
   store.toggleEntryDone(entryId)
+}
+
+function removeEntry(entry: PlanEntry): void {
+  const taskType = store.taskTypeById.get(entry.taskTypeId)
+  if (taskType?.recurrence) {
+    store.excludeRecurrenceDate(entry.taskTypeId, entry.date)
+  }
+  store.removePlanEntry(entry.id)
 }
 </script>
 
@@ -84,11 +97,19 @@ function toggleDone(entryId: string): void {
       >
         <input
           type="checkbox"
+          aria-label="Выполнено"
           class="h-4 w-4 rounded border-slate-300 text-indigo-600"
           :checked="entry.done"
           @change="toggleDone(entry.id)"
         />
-        <span class="h-2.5 w-2.5 shrink-0 rounded-full" :class="taskTypeDotClass(entry.taskTypeId)" />
+        <span v-if="taskTypeIcon(entry.taskTypeId)" class="shrink-0 text-sm">{{
+          taskTypeIcon(entry.taskTypeId)
+        }}</span>
+        <span
+          v-else
+          class="h-2.5 w-2.5 shrink-0 rounded-full"
+          :class="taskTypeDotClass(entry.taskTypeId)"
+        />
         <div class="min-w-0 flex-1">
           <p class="text-sm" :class="entry.done ? 'text-slate-400 line-through' : 'text-slate-800'">
             {{ taskTypeName(entry.taskTypeId) }}
@@ -101,6 +122,14 @@ function toggleDone(entryId: string): void {
             {{ formatFullDate(entry.date) }}<span v-if="entry.time"> · {{ entry.time }}</span>
           </p>
         </div>
+        <button
+          type="button"
+          aria-label="Удалить запись"
+          class="text-slate-400 hover:text-rose-500"
+          @click="removeEntry(entry)"
+        >
+          ✕
+        </button>
       </li>
     </ul>
   </div>

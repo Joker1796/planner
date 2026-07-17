@@ -5,6 +5,7 @@ import { TASK_COLOR_CLASSES, isTaskColor, type TaskColor } from '@/lib/colors'
 const props = defineProps<{
   label: string
   color: string
+  icon?: string | null
   selected?: boolean
   removable?: boolean
 }>()
@@ -20,7 +21,9 @@ const classes = computed(() => TASK_COLOR_CLASSES[resolvedColor.value])
     class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
     :class="selected ? [classes.chipBgSelected, 'text-white'] : [classes.chipBg, classes.chipText]"
   >
-    <button type="button" class="cursor-pointer" @click="emit('click')">{{ label }}</button>
+    <button type="button" class="cursor-pointer" @click="emit('click')">
+      <span v-if="icon">{{ icon }} </span>{{ label }}
+    </button>
     <button
       v-if="removable"
       type="button"

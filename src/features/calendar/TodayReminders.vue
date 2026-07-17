@@ -21,6 +21,10 @@ function taskTypeName(taskTypeId: string): string {
   return store.taskTypeById.get(taskTypeId)?.name ?? 'Задача'
 }
 
+function taskTypeIcon(taskTypeId: string): string | null {
+  return store.taskTypeById.get(taskTypeId)?.icon ?? null
+}
+
 function taskTypeDotClass(taskTypeId: string): string {
   const taskType = store.taskTypeById.get(taskTypeId)
   const color = taskType && isTaskColor(taskType.color) ? taskType.color : 'indigo'
@@ -55,7 +59,14 @@ function toggleDone(entry: PlanEntry): void {
           :checked="entry.done"
           @change="toggleDone(entry)"
         />
-        <span class="h-2 w-2 shrink-0 rounded-full" :class="taskTypeDotClass(entry.taskTypeId)" />
+        <span v-if="taskTypeIcon(entry.taskTypeId)" class="shrink-0 text-sm">{{
+          taskTypeIcon(entry.taskTypeId)
+        }}</span>
+        <span
+          v-else
+          class="h-2 w-2 shrink-0 rounded-full"
+          :class="taskTypeDotClass(entry.taskTypeId)"
+        />
         <span
           v-if="entry.time"
           class="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600"

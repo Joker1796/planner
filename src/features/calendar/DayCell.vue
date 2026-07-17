@@ -22,11 +22,15 @@ const dots = computed(() =>
     const member = taskType?.familyMemberId
       ? props.familyMemberById.get(taskType.familyMemberId)
       : undefined
+    const icon = taskType?.icon ?? null
+    const initial = !icon && member ? member.name.trim().charAt(0).toUpperCase() : null
     return {
       id: entry.id,
       done: entry.done,
       dotClass: TASK_COLOR_CLASSES[color].dot,
-      initial: member ? member.name.trim().charAt(0).toUpperCase() : null,
+      content: icon ?? initial,
+      isIcon: Boolean(icon),
+      isBadge: Boolean(icon || initial),
     }
   }),
 )
@@ -51,11 +55,12 @@ const overflowCount = computed(() => Math.max(props.entries.length - MAX_VISIBLE
         :key="dot.id"
         class="flex items-center justify-center rounded-full leading-none"
         :class="[
-          dot.dotClass,
+          dot.isIcon ? '' : dot.dotClass,
           dot.done ? 'opacity-40' : '',
-          dot.initial ? 'h-3.5 w-3.5 text-[8px] font-bold text-white' : 'h-1.5 w-1.5',
+          dot.isBadge ? 'h-3.5 w-3.5 text-[9px]' : 'h-1.5 w-1.5',
+          dot.isBadge && !dot.isIcon ? 'font-bold text-white' : '',
         ]"
-        >{{ dot.initial }}</span
+        >{{ dot.content }}</span
       >
       <span v-if="overflowCount > 0" class="text-[10px] leading-none text-slate-400"
         >+{{ overflowCount }}</span

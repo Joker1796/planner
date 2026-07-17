@@ -36,6 +36,7 @@ function removeTaskType(taskTypeId: string, name: string): void {
         :key="taskType.id"
         :label="chipLabel(taskType)"
         :color="taskType.color"
+        :icon="taskType.icon"
         removable
         @remove="removeTaskType(taskType.id, taskType.name)"
       />

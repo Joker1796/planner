@@ -26,6 +26,7 @@ export const usePlannerStore = defineStore('planner', () => {
     color: string,
     familyMemberId?: string | null,
     recurrence?: Recurrence | null,
+    icon?: string | null,
   ): void {
     taskTypes.value.push({
       id: generateId(),
@@ -34,6 +35,7 @@ export const usePlannerStore = defineStore('planner', () => {
       createdAt: Date.now(),
       familyMemberId: familyMemberId ?? null,
       recurrence: recurrence ?? null,
+      icon: icon ?? null,
     })
     persist()
   }
