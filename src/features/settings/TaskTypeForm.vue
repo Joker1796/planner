@@ -78,11 +78,11 @@ function submit(): void {
     </div>
     <div>
       <p class="mb-1 text-sm font-medium text-slate-700">Иконка</p>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1">
         <button
           type="button"
           aria-label="Без иконки"
-          class="flex h-8 w-8 items-center justify-center rounded-lg border text-sm text-slate-400 transition-colors"
+          class="flex h-8 w-8 shrink-0 snap-start items-center justify-center rounded-lg border text-sm text-slate-400 transition-colors"
           :class="selectedIcon === null ? 'border-slate-900 bg-slate-100' : 'border-slate-200 hover:bg-slate-50'"
           @click="selectedIcon = null"
         >
@@ -93,7 +93,7 @@ function submit(): void {
           :key="icon"
           type="button"
           :aria-label="icon"
-          class="flex h-8 w-8 items-center justify-center rounded-lg border text-base transition-colors"
+          class="flex h-8 w-8 shrink-0 snap-start items-center justify-center rounded-lg border text-base transition-colors"
           :class="selectedIcon === icon ? 'border-slate-900 bg-slate-100' : 'border-slate-200 hover:bg-slate-50'"
           @click="selectedIcon = icon"
         >
