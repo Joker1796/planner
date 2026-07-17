@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import('@/features/calendar/CalendarPage.vue'),
     },
     {
+      path: '/history',
+      name: 'history',
+      component: () => import('@/features/history/HistoryPage.vue'),
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/features/settings/SettingsPage.vue'),

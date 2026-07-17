@@ -5,9 +5,11 @@ import {
   format,
   isSameMonth,
   isToday as isDateToday,
+  parseISO,
   startOfMonth,
   startOfWeek,
 } from 'date-fns'
+import { ru } from 'date-fns/locale'
 
 const WEEK_STARTS_ON = 1 // Monday
 
@@ -26,6 +28,10 @@ export function toISODate(date: Date): string {
 
 export function isTodayISO(iso: string): boolean {
   return iso === toISODate(new Date())
+}
+
+export function formatFullDate(iso: string): string {
+  return format(parseISO(iso), 'd MMMM yyyy', { locale: ru })
 }
 
 // Builds a full 7-column grid for the month containing `year`/`month`,

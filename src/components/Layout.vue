@@ -12,6 +12,13 @@
           Календарь
         </RouterLink>
         <RouterLink
+          to="/history"
+          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+          active-class="bg-indigo-100 text-indigo-700"
+        >
+          История
+        </RouterLink>
+        <RouterLink
           to="/settings"
           class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
           active-class="bg-indigo-100 text-indigo-700"

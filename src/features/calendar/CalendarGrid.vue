@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CalendarDay } from '@/lib/date/dateUtils'
-import type { PlanEntry, TaskType } from '@/types'
+import type { FamilyMember, PlanEntry, TaskType } from '@/types'
 import { WEEKDAY_LABELS } from '@/lib/date/dateUtils'
 import DayCell from './DayCell.vue'
 
@@ -8,6 +8,7 @@ defineProps<{
   days: CalendarDay[]
   entriesByDate: Map<string, PlanEntry[]>
   taskTypeById: Map<string, TaskType>
+  familyMemberById: Map<string, FamilyMember>
 }>()
 
 const emit = defineEmits<{ select: [iso: string] }>()
@@ -25,6 +26,7 @@ const emit = defineEmits<{ select: [iso: string] }>()
         :day="day"
         :entries="entriesByDate.get(day.iso) ?? []"
         :task-type-by-id="taskTypeById"
+        :family-member-by-id="familyMemberById"
         @select="emit('select', $event)"
       />
     </div>

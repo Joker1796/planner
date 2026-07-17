@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { CalendarDay } from '@/lib/date/dateUtils'
-import type { PlanEntry, TaskType } from '@/types'
+import type { FamilyMember, PlanEntry, TaskType } from '@/types'
 import { TASK_COLOR_CLASSES, isTaskColor } from '@/lib/colors'
 
 const props = defineProps<{
   day: CalendarDay
   entries: PlanEntry[]
   taskTypeById: Map<string, TaskType>
+  familyMemberById: Map<string, FamilyMember>
 }>()
 
 const emit = defineEmits<{ select: [iso: string] }>()
@@ -18,7 +19,15 @@ const dots = computed(() =>
   props.entries.slice(0, MAX_VISIBLE_DOTS).map((entry) => {
     const taskType = props.taskTypeById.get(entry.taskTypeId)
     const color = taskType && isTaskColor(taskType.color) ? taskType.color : 'indigo'
-    return { id: entry.id, done: entry.done, dotClass: TASK_COLOR_CLASSES[color].dot }
+    const member = taskType?.familyMemberId
+      ? props.familyMemberById.get(taskType.familyMemberId)
+      : undefined
+    return {
+      id: entry.id,
+      done: entry.done,
+      dotClass: TASK_COLOR_CLASSES[color].dot,
+      initial: member ? member.name.trim().charAt(0).toUpperCase() : null,
+    }
   }),
 )
 
@@ -40,9 +49,14 @@ const overflowCount = computed(() => Math.max(props.entries.length - MAX_VISIBLE
       <span
         v-for="dot in dots"
         :key="dot.id"
-        class="h-1.5 w-1.5 rounded-full"
-        :class="[dot.dotClass, dot.done ? 'opacity-40' : '']"
-      />
+        class="flex items-center justify-center rounded-full leading-none"
+        :class="[
+          dot.dotClass,
+          dot.done ? 'opacity-40' : '',
+          dot.initial ? 'h-3.5 w-3.5 text-[8px] font-bold text-white' : 'h-1.5 w-1.5',
+        ]"
+        >{{ dot.initial }}</span
+      >
       <span v-if="overflowCount > 0" class="text-[10px] leading-none text-slate-400"
         >+{{ overflowCount }}</span
       >

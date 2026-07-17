@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import TaskTypeForm from './TaskTypeForm.vue'
 import TaskTypeList from './TaskTypeList.vue'
+import FamilyMemberForm from './FamilyMemberForm.vue'
+import FamilyMemberList from './FamilyMemberList.vue'
 </script>
 
 <template>
@@ -11,7 +13,15 @@ import TaskTypeList from './TaskTypeList.vue'
         Создайте типы задач, которые будут доступны при добавлении планов в календаре.
       </p>
     </div>
-    <TaskTypeList />
-    <TaskTypeForm />
+    <section class="space-y-3">
+      <h2 class="text-sm font-semibold text-slate-700">Семья</h2>
+      <FamilyMemberList />
+      <FamilyMemberForm />
+    </section>
+    <section class="space-y-3">
+      <h2 class="text-sm font-semibold text-slate-700">Типы задач</h2>
+      <TaskTypeList />
+      <TaskTypeForm />
+    </section>
   </div>
 </template>
