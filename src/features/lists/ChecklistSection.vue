@@ -6,10 +6,19 @@ import type { ListKind } from '@/types'
 
 const props = defineProps<{ kind: ListKind; title: string; placeholder: string }>()
 
+const VISIBLE_LIMIT = 6
+
 const store = usePlannerStore()
 const text = ref('')
+const expanded = ref(false)
 
 const items = computed(() => store.listItems.filter((item) => item.list === props.kind))
+
+const visibleItems = computed(() =>
+  expanded.value ? items.value : items.value.slice(0, VISIBLE_LIMIT),
+)
+
+const hiddenCount = computed(() => Math.max(items.value.length - VISIBLE_LIMIT, 0))
 
 function submit(): void {
   const trimmed = text.value.trim()
@@ -49,7 +58,7 @@ function removeItem(id: string): void {
     <p v-if="items.length === 0" class="text-sm text-slate-500">Пока пусто.</p>
     <ul v-else class="space-y-2">
       <li
-        v-for="item in items"
+        v-for="item in visibleItems"
         :key="item.id"
         class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
       >
@@ -79,5 +88,13 @@ function removeItem(id: string): void {
         </button>
       </li>
     </ul>
+    <button
+      v-if="items.length > VISIBLE_LIMIT"
+      type="button"
+      class="text-xs font-medium text-indigo-600 hover:underline"
+      @click="expanded = !expanded"
+    >
+      {{ expanded ? 'Свернуть' : `Показать ещё ${hiddenCount}` }}
+    </button>
   </section>
 </template>

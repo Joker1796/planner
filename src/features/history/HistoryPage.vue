@@ -8,12 +8,12 @@ import type { PlanEntry } from '@/types'
 type DoneFilter = 'all' | 'done' | 'pending'
 
 const store = usePlannerStore()
-const filter = ref<DoneFilter>('all')
+const filter = ref<DoneFilter>('pending')
 
 const filterOptions: { value: DoneFilter; label: string }[] = [
-  { value: 'all', label: 'Все' },
-  { value: 'done', label: 'Выполнено' },
   { value: 'pending', label: 'Не выполнено' },
+  { value: 'done', label: 'Выполнено' },
+  { value: 'all', label: 'Все' },
 ]
 
 const sortedEntries = computed(() =>

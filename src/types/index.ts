@@ -9,7 +9,9 @@ export type RecurrenceUnit = 'day' | 'week'
 export interface Recurrence {
   unit: RecurrenceUnit
   interval: number
-  startDate: string
+  // null until the task type is first added to a specific calendar day —
+  // that day becomes the anchor the pattern counts from.
+  startDate: string | null
 }
 
 export interface TaskType {

@@ -81,6 +81,12 @@ export const usePlannerStore = defineStore('planner', () => {
       updatedAt: now,
     }
     entries.value.push(created)
+    // First time this recurring task type is placed on the calendar — that
+    // day becomes the anchor its pattern counts from going forward.
+    const taskType = taskTypes.value.find((t) => t.id === taskTypeId)
+    if (taskType?.recurrence && !taskType.recurrence.startDate) {
+      taskType.recurrence.startDate = date
+    }
     return created
   }
 

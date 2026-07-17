@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import { TASK_COLORS, TASK_COLOR_CLASSES, type TaskColor } from '@/lib/colors'
 import { TASK_ICONS } from '@/lib/icons'
 import { usePlannerStore } from '@/store/usePlannerStore'
-import { toISODate } from '@/lib/date/dateUtils'
 import type { Recurrence, RecurrenceUnit } from '@/types'
 import Chip from '@/components/Chip.vue'
 
@@ -31,7 +30,7 @@ function submit(): void {
     ? {
         unit: recurrenceUnit.value,
         interval: Math.max(1, recurrenceInterval.value || 1),
-        startDate: toISODate(new Date()),
+        startDate: null,
       }
     : null
   store.addTaskType(trimmed, selectedColor.value, selectedFamilyMemberId.value, recurrence, selectedIcon.value)
@@ -142,7 +141,8 @@ function submit(): void {
             class="w-16 rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
           <span class="text-xs text-slate-500">
-            {{ recurrenceUnit === 'day' ? 'дн.' : 'нед.' }}, начиная с сегодня
+            {{ recurrenceUnit === 'day' ? 'дн.' : 'нед.' }} — начнётся с того дня, когда вы
+            впервые добавите задачу в календарь
           </span>
         </template>
       </div>

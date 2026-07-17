@@ -12,7 +12,13 @@ function chipLabel(taskType: TaskType): string {
     : undefined
   const parts = [taskType.name]
   if (member) parts.push(member.name)
-  if (taskType.recurrence) parts.push(describeRecurrence(taskType.recurrence))
+  if (taskType.recurrence) {
+    parts.push(
+      taskType.recurrence.startDate
+        ? describeRecurrence(taskType.recurrence)
+        : `${describeRecurrence(taskType.recurrence)} (не начато)`,
+    )
+  }
   return parts.join(' · ')
 }
 

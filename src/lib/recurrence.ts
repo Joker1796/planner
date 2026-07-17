@@ -2,6 +2,7 @@ import { differenceInCalendarDays, parseISO } from 'date-fns'
 import type { Recurrence } from '@/types'
 
 export function matchesRecurrence(recurrence: Recurrence, iso: string): boolean {
+  if (!recurrence.startDate) return false
   const diffDays = differenceInCalendarDays(parseISO(iso), parseISO(recurrence.startDate))
   // The creation day itself never matches — the first occurrence lands
   // one full interval later, not immediately on the day it was set up.
