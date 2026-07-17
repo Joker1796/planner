@@ -141,6 +141,7 @@ export const usePlannerStore = defineStore('planner', () => {
     const item = listItems.value.find((i) => i.id === id)
     if (!item) return
     item.done = !item.done
+    item.doneAt = item.done ? Date.now() : null
     persist()
   }
 

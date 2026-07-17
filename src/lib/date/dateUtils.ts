@@ -34,6 +34,10 @@ export function formatFullDate(iso: string): string {
   return format(parseISO(iso), 'd MMMM yyyy', { locale: ru })
 }
 
+export function formatShortDate(timestamp: number): string {
+  return format(new Date(timestamp), 'd MMM', { locale: ru })
+}
+
 // Builds a full 7-column grid for the month containing `year`/`month`,
 // padded with the leading/trailing days needed to fill whole weeks.
 export function buildMonthGrid(year: number, month: number): CalendarDay[] {

@@ -41,6 +41,7 @@ export interface ListItem {
   list: ListKind
   text: string
   done: boolean
+  doneAt?: number | null
   createdAt: number
 }
 
