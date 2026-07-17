@@ -3,12 +3,13 @@ import { computed } from 'vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { toISODate } from '@/lib/date/dateUtils'
 import { TASK_COLOR_CLASSES, isTaskColor } from '@/lib/colors'
+import type { PlanEntry } from '@/types'
 
 const store = usePlannerStore()
 const todayIso = toISODate(new Date())
 
 const todayEntries = computed(() =>
-  [...(store.entriesByDate.get(todayIso) ?? [])].sort((a, b) => {
+  [...store.getEffectiveEntriesForDate(todayIso)].sort((a, b) => {
     if (a.time && b.time) return a.time.localeCompare(b.time)
     if (a.time) return -1
     if (b.time) return 1
@@ -26,8 +27,12 @@ function taskTypeDotClass(taskTypeId: string): string {
   return TASK_COLOR_CLASSES[color].dot
 }
 
-function toggleDone(entryId: string): void {
-  store.toggleEntryDone(entryId)
+function toggleDone(entry: PlanEntry): void {
+  if (entry.id.startsWith('virtual:')) {
+    store.upsertPlanEntry(todayIso, entry.taskTypeId, true)
+  } else {
+    store.toggleEntryDone(entry.id)
+  }
 }
 </script>
 
@@ -48,7 +53,7 @@ function toggleDone(entryId: string): void {
           aria-label="Выполнено"
           class="h-4 w-4 rounded border-slate-300 text-indigo-600"
           :checked="entry.done"
-          @change="toggleDone(entry.id)"
+          @change="toggleDone(entry)"
         />
         <span class="h-2 w-2 shrink-0 rounded-full" :class="taskTypeDotClass(entry.taskTypeId)" />
         <span

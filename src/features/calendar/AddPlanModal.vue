@@ -4,15 +4,20 @@ import Modal from '@/components/Modal.vue'
 import Chip from '@/components/Chip.vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { formatFullDate } from '@/lib/date/dateUtils'
+import type { PlanEntry } from '@/types'
 
 const props = defineProps<{ date: string }>()
 const emit = defineEmits<{ close: [] }>()
 
 const store = usePlannerStore()
 
+function isVirtual(entry: PlanEntry): boolean {
+  return entry.id.startsWith('virtual:')
+}
+
 const dateLabel = computed(() => formatFullDate(props.date))
 
-const entriesForDate = computed(() => store.entriesByDate.get(props.date) ?? [])
+const entriesForDate = computed(() => store.getEffectiveEntriesForDate(props.date))
 
 const addedTaskTypeIds = computed(
   () => new Set(entriesForDate.value.map((entry) => entry.taskTypeId)),
@@ -26,17 +31,28 @@ function addTaskType(taskTypeId: string): void {
   store.upsertPlanEntry(props.date, taskTypeId, false)
 }
 
-function toggleDone(entryId: string): void {
-  store.toggleEntryDone(entryId)
+function toggleDone(entry: PlanEntry): void {
+  if (isVirtual(entry)) {
+    store.upsertPlanEntry(props.date, entry.taskTypeId, true)
+  } else {
+    store.toggleEntryDone(entry.id)
+  }
 }
 
-function setTime(entryId: string, event: Event): void {
+function setTime(entry: PlanEntry, event: Event): void {
   const value = (event.target as HTMLInputElement).value
-  store.setEntryTime(entryId, value || null)
+  const id = isVirtual(entry) ? store.materializeEntry(props.date, entry.taskTypeId) : entry.id
+  store.setEntryTime(id, value || null)
 }
 
-function removeEntry(entryId: string): void {
-  store.removePlanEntry(entryId)
+function removeEntry(entry: PlanEntry): void {
+  const taskType = store.taskTypeById.get(entry.taskTypeId)
+  if (taskType?.recurrence) {
+    store.excludeRecurrenceDate(entry.taskTypeId, props.date)
+  }
+  if (!isVirtual(entry)) {
+    store.removePlanEntry(entry.id)
+  }
 }
 </script>
 
@@ -53,7 +69,7 @@ function removeEntry(entryId: string): void {
           aria-label="Выполнено"
           class="h-4 w-4 rounded border-slate-300 text-indigo-600"
           :checked="entry.done"
-          @change="toggleDone(entry.id)"
+          @change="toggleDone(entry)"
         />
         <span
           class="flex-1 text-sm"
@@ -66,13 +82,13 @@ function removeEntry(entryId: string): void {
           aria-label="Время"
           class="w-[5.5rem] shrink-0 rounded-lg border border-slate-300 px-1.5 py-1 text-xs focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           :value="entry.time ?? ''"
-          @change="setTime(entry.id, $event)"
+          @change="setTime(entry, $event)"
         />
         <button
           type="button"
           aria-label="Удалить план"
           class="text-slate-400 hover:text-rose-500"
-          @click="removeEntry(entry.id)"
+          @click="removeEntry(entry)"
         >
           ✕
         </button>

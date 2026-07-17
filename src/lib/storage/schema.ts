@@ -1,7 +1,7 @@
 import type { PersistedState } from '@/types'
 
 export const STORAGE_KEY = 'planner-app'
-export const CURRENT_VERSION = 2
+export const CURRENT_VERSION = 3
 
 export function createEmptyState(): PersistedState {
   return {
@@ -9,5 +9,6 @@ export function createEmptyState(): PersistedState {
     taskTypes: [],
     entries: [],
     familyMembers: [],
+    listItems: [],
   }
 }

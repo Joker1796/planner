@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { TASK_COLORS, TASK_COLOR_CLASSES, type TaskColor } from '@/lib/colors'
 import { usePlannerStore } from '@/store/usePlannerStore'
+import { toISODate } from '@/lib/date/dateUtils'
+import type { Recurrence, RecurrenceUnit } from '@/types'
 import Chip from '@/components/Chip.vue'
 
 const store = usePlannerStore()
@@ -9,14 +11,25 @@ const store = usePlannerStore()
 const name = ref('')
 const selectedColor = ref<TaskColor>(TASK_COLORS[0])
 const selectedFamilyMemberId = ref<string | null>(null)
+const recurrenceUnit = ref<RecurrenceUnit | ''>('')
+const recurrenceInterval = ref(1)
 
 function submit(): void {
   const trimmed = name.value.trim()
   if (!trimmed) return
-  store.addTaskType(trimmed, selectedColor.value, selectedFamilyMemberId.value)
+  const recurrence: Recurrence | null = recurrenceUnit.value
+    ? {
+        unit: recurrenceUnit.value,
+        interval: Math.max(1, recurrenceInterval.value || 1),
+        startDate: toISODate(new Date()),
+      }
+    : null
+  store.addTaskType(trimmed, selectedColor.value, selectedFamilyMemberId.value, recurrence)
   name.value = ''
   selectedColor.value = TASK_COLORS[0]
   selectedFamilyMemberId.value = null
+  recurrenceUnit.value = ''
+  recurrenceInterval.value = 1
 }
 </script>
 
@@ -69,6 +82,32 @@ function submit(): void {
           :selected="selectedFamilyMemberId === member.id"
           @click="selectedFamilyMemberId = member.id"
         />
+      </div>
+    </div>
+    <div>
+      <p class="mb-1 text-sm font-medium text-slate-700">Повтор</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <select
+          v-model="recurrenceUnit"
+          class="rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <option value="">Без повтора</option>
+          <option value="day">Дней</option>
+          <option value="week">Недель</option>
+        </select>
+        <template v-if="recurrenceUnit">
+          <span class="text-sm text-slate-500">каждые</span>
+          <input
+            v-model.number="recurrenceInterval"
+            type="number"
+            min="1"
+            max="30"
+            class="w-16 rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+          <span class="text-xs text-slate-500">
+            {{ recurrenceUnit === 'day' ? 'дн.' : 'нед.' }}, начиная с сегодня
+          </span>
+        </template>
       </div>
     </div>
     <button

@@ -2,6 +2,7 @@
 import Chip from '@/components/Chip.vue'
 import type { TaskType } from '@/types'
 import { usePlannerStore } from '@/store/usePlannerStore'
+import { describeRecurrence } from '@/lib/recurrence'
 
 const store = usePlannerStore()
 
@@ -9,7 +10,10 @@ function chipLabel(taskType: TaskType): string {
   const member = taskType.familyMemberId
     ? store.familyMemberById.get(taskType.familyMemberId)
     : undefined
-  return member ? `${taskType.name} · ${member.name}` : taskType.name
+  const parts = [taskType.name]
+  if (member) parts.push(member.name)
+  if (taskType.recurrence) parts.push(describeRecurrence(taskType.recurrence))
+  return parts.join(' · ')
 }
 
 function removeTaskType(taskTypeId: string, name: string): void {

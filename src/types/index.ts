@@ -4,6 +4,14 @@ export interface FamilyMember {
   createdAt: number
 }
 
+export type RecurrenceUnit = 'day' | 'week'
+
+export interface Recurrence {
+  unit: RecurrenceUnit
+  interval: number
+  startDate: string
+}
+
 export interface TaskType {
   id: string
   name: string
@@ -11,6 +19,8 @@ export interface TaskType {
   createdAt: number
   archivedAt?: number | null
   familyMemberId?: string | null
+  recurrence?: Recurrence | null
+  excludedDates?: string[]
 }
 
 export interface PlanEntry {
@@ -23,9 +33,20 @@ export interface PlanEntry {
   updatedAt: number
 }
 
+export type ListKind = 'shopping' | 'todo'
+
+export interface ListItem {
+  id: string
+  list: ListKind
+  text: string
+  done: boolean
+  createdAt: number
+}
+
 export interface PersistedState {
   version: number
   taskTypes: TaskType[]
   entries: PlanEntry[]
   familyMembers: FamilyMember[]
+  listItems: ListItem[]
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { useCalendarMonth } from './useCalendarMonth'
 import MonthNavigator from './MonthNavigator.vue'
@@ -10,6 +10,10 @@ import TodayReminders from './TodayReminders.vue'
 
 const store = usePlannerStore()
 const { days, label, goToPrevMonth, goToNextMonth, goToToday } = useCalendarMonth()
+
+const effectiveEntriesByDate = computed(() =>
+  store.buildEffectiveEntriesByDate(days.value.map((day) => day.iso)),
+)
 
 const selectedDate = ref<string | null>(null)
 
@@ -29,7 +33,7 @@ function closeModal(): void {
     <MonthNavigator :label="label" @prev="goToPrevMonth" @next="goToNextMonth" @today="goToToday" />
     <CalendarGrid
       :days="days"
-      :entries-by-date="store.entriesByDate"
+      :entries-by-date="effectiveEntriesByDate"
       :task-type-by-id="store.taskTypeById"
       :family-member-by-id="store.familyMemberById"
       @select="openDay"
