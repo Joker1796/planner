@@ -4,12 +4,14 @@ import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { usePlannerStore } from '@/store/usePlannerStore'
 import { TASK_COLOR_CLASSES, isTaskColor } from '@/lib/colors'
 import { formatFullDate } from '@/lib/date/dateUtils'
+import { useTodayISO } from '@/lib/date/useToday'
 import type { BudgetGoal } from '@/types'
 
 const props = defineProps<{ goal: BudgetGoal }>()
 const emit = defineEmits<{ open: [] }>()
 
 const store = usePlannerStore()
+const todayIso = useTodayISO()
 
 const saved = computed(() => store.budgetTotalsByGoal.get(props.goal.id) ?? 0)
 const percent = computed(() =>
@@ -23,7 +25,7 @@ const barClass = computed(() => TASK_COLOR_CLASSES[color.value].dot)
 
 const daysLeft = computed(() => {
   if (!props.goal.deadline) return null
-  return differenceInCalendarDays(parseISO(props.goal.deadline), new Date())
+  return differenceInCalendarDays(parseISO(props.goal.deadline), parseISO(todayIso.value))
 })
 
 function formatAmount(value: number): string {
